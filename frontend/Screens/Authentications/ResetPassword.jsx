@@ -1,42 +1,62 @@
-import { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { useState, useEffect } from "react";
+import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { useLocation, useNavigate } from "react-router-dom";
 import { wp } from "../../Utilis/Scale";
-
-const initialData = {
-  email: "",
-  password: "",
-};
+import { BASE_URL } from "@env";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { addToken } from "../../Redux/Auth/actionAuth";
 
 export const ResetPassword = () => {
-  const [data, setData] = useState(initialData);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setData({ ...data, [name]: value });
-  };
+  const { state } = useLocation();
+  const [password, setPassword] = useState("");
+  const [isUpload, setIsUpload] = useState(false);
+  const Dispatch = useDispatch();
+  const Navigate = useNavigate();
+  const { token } = useSelector((store) => store);
 
   const handleSubmit = () => {
-    console.log(data);
+    setIsUpload(true);
+    axios
+      .patch(
+        `${BASE_URL}/user/reset`,
+        { password },
+        {
+          headers: {
+            Authorization: "Bearer " + state.token,
+          },
+        }
+      )
+      .then((res) => {
+        Dispatch(addToken(res.data.token));
+        localStorage.setItem("token", JSON.stringify(res.data.token));
+        Navigate("/");
+      })
+      .catch((e) => {
+        if (e.response.data.errors)
+          return wp(100) < 425
+            ? Alert.alert(e.response.data.errors[0].msg)
+            : alert(e.response.data.errors[0].msg);
+        wp(100) < 425 ? Alert.alert(e.response.data) : alert(e.response.data);
+      })
+      .finally(() => setIsUpload(false));
   };
+
+  useEffect(() => {
+    if (token) return Navigate("/");
+  }, []);
 
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Reset Password</Text>
-      <TextInput
-        style={styles.input}
-        name="email"
-        placeholder="Enter your email"
-        onChange={handleChange}
-      />
+      <TextInput style={styles.input} value={state.email} disabled />
       <TextInput
         style={styles.input}
         secureTextEntry
-        name="password"
-        type="password"
         placeholder="Enter new password"
-        onChange={handleChange}
+        onChangeText={(text) => setPassword(text)}
       />
-      <Button title="Submit" onPress={handleSubmit} />
+      <Button disabled={isUpload} title="Submit" onPress={handleSubmit} />
     </View>
   );
 };

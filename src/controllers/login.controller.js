@@ -35,7 +35,7 @@ router.post(
 
       let token = newToken(user);
 
-      res.status(200).send({ user, token });
+      res.status(200).send({ token });
     } catch (e) {
       res.status(500).send(e.message);
     }

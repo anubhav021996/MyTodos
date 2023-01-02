@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 require("dotenv").config();
 
 const connect = require("./configs/db");
@@ -9,6 +10,7 @@ const userController = require("./controllers/user.controller");
 const loginController = require("./controllers/login.controller");
 const todoController = require("./controllers/todo.controller");
 
+app.use(cors());
 app.use(express.json());
 
 app.use("/email", emailController);

@@ -1,7 +1,11 @@
-import { useState } from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { useState, useEffect } from "react";
+import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { useNavigate } from "react-router-dom";
 import { wp } from "../../Utilis/Scale";
+import { BASE_URL } from "@env";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { addToken } from "../../Redux/Auth/actionAuth";
 
 const initialData = {
   email: "",
@@ -10,16 +14,35 @@ const initialData = {
 
 export const Login = () => {
   const [data, setData] = useState(initialData);
+  const [isupload, setIsUpload] = useState(false);
   const Navigate = useNavigate();
+  const Dispatch = useDispatch();
+  const { token } = useSelector((store) => store);
 
-  const handleChange = (name, e) => {
-    const { value } = e.target;
-    setData({ ...data, [name]: value });
-  };
+  const handleChange = (value, name) => setData({ ...data, [name]: value });
 
   const handleSubmit = () => {
-    console.log(data);
+    setIsUpload(true);
+    axios
+      .post(`${BASE_URL}/login`, data)
+      .then((res) => {
+        Dispatch(addToken(res.data.token));
+        localStorage.setItem("token", JSON.stringify(res.data.token));
+        Navigate("/");
+      })
+      .catch((e) => {
+        if (e.response.data.errors)
+          return wp(100) < 425
+            ? Alert.alert(e.response.data.errors[0].msg)
+            : alert(e.response.data.errors[0].msg);
+        wp(100) < 425 ? Alert.alert(e.response.data) : alert(e.response.data);
+      })
+      .finally(() => setIsUpload(false));
   };
+
+  useEffect(() => {
+    if (token) return Navigate("/");
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -27,20 +50,20 @@ export const Login = () => {
       <TextInput
         style={styles.input}
         placeholder="Enter your email"
-        onChange={() => handleChange("name")}
+        keyboardType="email-address"
+        onChangeText={(text) => handleChange(text, "email")}
       />
       <TextInput
         style={styles.input}
         secureTextEntry
-        type="password"
         placeholder="Enter your password"
-        onChange={() => handleChange("password")}
+        onChangeText={(text) => handleChange(text, "password")}
       />
-      <Text style={styles.forgot} onPress={() => Navigate("/reset")}>
+      <Text style={styles.forgot} onPress={() => Navigate("/forgot")}>
         Forgot Password?
       </Text>
-      <Button title="Submit" onPress={handleSubmit} />
-      <Text style={styles.new} onPress={() => Navigate("/signup")}>
+      <Button title="Submit" disabled={isupload} onPress={handleSubmit} />
+      <Text style={styles.new} onPress={() => Navigate("/email")}>
         Create a new account
       </Text>
     </View>

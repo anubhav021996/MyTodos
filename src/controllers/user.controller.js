@@ -56,24 +56,12 @@ router.post(
 
       welcomeMail(user);
       adminMail(user);
-      res.status(200).send({ user, token });
+      res.status(200).send({ token });
     } catch (e) {
       res.status(500).send(e.message);
     }
   }
 );
-
-// router.patch("",Authentication,async(req,res)=>{
-//     try{
-//         let id= req.user._id;
-
-//         const user= await User.findByIdAndUpdate(id,req.body,{new:true});
-//         res.status(200).send(user);
-//     }
-//     catch(e){
-//         res.status(500).send(e.message);
-//     }
-// });
 
 router.patch(
   "/reset",
@@ -101,7 +89,7 @@ router.patch(
       await user.save();
       const token = newToken(user);
       resetMail(user);
-      res.status(200).send({ user, token });
+      res.status(200).send({ token });
     } catch (e) {
       res.status(500).send(e.message);
     }

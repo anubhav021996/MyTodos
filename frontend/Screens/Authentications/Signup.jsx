@@ -1,49 +1,69 @@
-import { useState } from "react";
-import { View, Text, StyleSheet, TextInput, Button } from "react-native";
+import { useState, useEffect } from "react";
+import { View, Text, StyleSheet, TextInput, Button, Alert } from "react-native";
+import { useLocation } from "react-router-dom";
 import { wp } from "../../Utilis/Scale";
+import { BASE_URL } from "@env";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { addToken } from "../../Redux/Auth/actionAuth";
 
 const initialData = {
   name: "",
-  email: "",
   password: "",
 };
 
 export const Signup = () => {
+  const { state } = useLocation();
   const [data, setData] = useState(initialData);
+  const [isupload, setisupload] = useState(false);
+  const Dispatch = useDispatch();
+  const { token } = useSelector((store) => store);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setData({ ...data, [name]: value });
-  };
+  const handleChange = (value, name) => setData({ ...data, [name]: value });
 
   const handleSubmit = () => {
-    console.log(data);
+    setisupload(true);
+    axios
+      .post(`${BASE_URL}/user`, data, {
+        headers: {
+          Authorization: "Bearer " + state.token,
+        },
+      })
+      .then((res) => {
+        Dispatch(addToken(res.data.token));
+        localStorage.setItem("token", JSON.stringify(res.data.token));
+        Navigate("/");
+      })
+      .catch((e) => {
+        if (e.response.data.errors)
+          return wp(100) < 425
+            ? Alert.alert(e.response.data.errors[0].msg)
+            : alert(e.response.data.errors[0].msg);
+        wp(100) < 425 ? Alert.alert(e.response.data) : alert(e.response.data);
+      })
+      .finally(() => setisupload(false));
   };
+
+  useEffect(() => {
+    if (token) return Navigate("/");
+  }, []);
 
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Signup</Text>
       <TextInput
         style={styles.input}
-        name="name"
         placeholder="Enter your name"
-        onChange={handleChange}
+        onChangeText={(text) => handleChange(text, "name")}
       />
-      <TextInput
-        style={styles.input}
-        name="email"
-        placeholder="Enter your email"
-        onChange={handleChange}
-      />
+      <TextInput style={styles.input} disabled value={state.email} />
       <TextInput
         style={styles.input}
         secureTextEntry
-        name="password"
-        type="password"
         placeholder="Enter your password"
-        onChange={handleChange}
+        onChangeText={(text) => handleChange(text, "password")}
       />
-      <Button title="Submit" onPress={handleSubmit} />
+      <Button disabled={isupload} title="Submit" onPress={handleSubmit} />
     </View>
   );
 };
