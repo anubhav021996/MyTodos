@@ -72,7 +72,7 @@ export const ForgotPassword = () => {
 
   useEffect(() => {
     if (token) return Navigate("/");
-  }, []);
+  }, [token]);
 
   return (
     <View style={styles.container}>

@@ -1,7 +1,7 @@
 import { ADDTOKEN, ADDUSER } from "./actionAuth";
 
 const initialState = {
-  token: JSON.parse(localStorage.getItem("token")) || null,
+  token: null,
   user: null,
 };
 

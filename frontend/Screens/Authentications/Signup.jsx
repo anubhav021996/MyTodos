@@ -6,6 +6,7 @@ import { BASE_URL } from "@env";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { addToken } from "../../Redux/Auth/actionAuth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const initialData = {
   name: "",
@@ -29,9 +30,9 @@ export const Signup = () => {
           Authorization: "Bearer " + state.token,
         },
       })
-      .then((res) => {
+      .then(async (res) => {
         Dispatch(addToken(res.data.token));
-        localStorage.setItem("token", JSON.stringify(res.data.token));
+        await AsyncStorage.setItem("token", res.data.token);
         Navigate("/");
       })
       .catch((e) => {
@@ -46,7 +47,7 @@ export const Signup = () => {
 
   useEffect(() => {
     if (token) return Navigate("/");
-  }, []);
+  }, [token]);
 
   return (
     <View style={styles.container}>

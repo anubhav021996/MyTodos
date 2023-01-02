@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addToken, addUser } from "../Redux/Auth/actionAuth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const Navbar = () => {
   const Navigate = useNavigate();
@@ -13,10 +14,15 @@ export const Navbar = () => {
     if (token) Dispatch(addUser(token));
   }, [token]);
 
-  const handleLogout = () => {
+  useEffect(async()=>{
+    let t= await AsyncStorage.getItem("token");
+    Dispatch(addToken(t));
+  },[]);
+
+  const handleLogout = async () => {
     Dispatch(addToken(null));
     Dispatch(addUser(null));
-    localStorage.removeItem("token");
+    await AsyncStorage.removeItem("token");
   };
 
   return (
