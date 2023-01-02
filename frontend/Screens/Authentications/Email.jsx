@@ -20,7 +20,7 @@ export const Email = () => {
   const requestOtp = () => {
     setOtpReq(true);
     setResend(false);
-    setTime(5);
+    setTime(60);
     axios
       .post(`${BASE_URL}/email`, {
         email: email,

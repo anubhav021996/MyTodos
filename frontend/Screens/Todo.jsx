@@ -5,12 +5,13 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { wp } from "../Utilis/Scale";
 import { BASE_URL } from "@env";
-import { TodoRow } from "../Components/TodoRow";
+import { TodoTable } from "../Components/TodoTable";
 
 export const Todo = () => {
   const { token, user } = useSelector((store) => store);
   const [todos, setTodos] = useState([]);
   const [isUpload, setIsUpload] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
   const Navigate = useNavigate();
 
@@ -38,6 +39,7 @@ export const Todo = () => {
   };
 
   const getTodos = () => {
+    setLoading(true);
     axios
       .get(`${BASE_URL}/todo`, {
         headers: {
@@ -46,6 +48,7 @@ export const Todo = () => {
       })
       .then((res) => {
         setTodos(res.data);
+        setLoading(false);
       });
   };
 
@@ -90,25 +93,21 @@ export const Todo = () => {
         <Button title="Add New Task" disabled={isUpload} onPress={handleAdd} />
       </View>
 
-      <View style={styles.tableHead}>
-        <Text style={styles.serialHead}>S.No.</Text>
-        <Text style={styles.titleHead}>Title</Text>
-        <Text style={styles.statusHead}>Status</Text>
-        <Text style={styles.toggleHead}>Toggle</Text>
-        <Text style={styles.deleteHead}>Delete</Text>
-      </View>
-
-      {todos.map((el, i) => (
-        <TodoRow
-          key={el._id}
-          serial={i + 1}
-          title={el.title}
-          status={el.status}
-          id={el._id}
-          toggleTodo={toggleTodo}
-          deleteTodo={deleteTodo}
-        />
-      ))}
+      {loading ? (
+        <Text style={styles.loading}>Loading Task...</Text>
+      ) : (
+        <View>
+          {!todos.length ? (
+            <Text style={styles.notask}>Start adding your task</Text>
+          ) : (
+            <TodoTable
+              deleteTodo={deleteTodo}
+              toggleTodo={toggleTodo}
+              todos={todos}
+            />
+          )}
+        </View>
+      )}
     </View>
   );
 };
@@ -131,42 +130,17 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
   },
-  tableHead: {
-    flexDirection: "row",
+  notask: {
+    fontSize: "xx-large",
+    fontWeight: "bold",
     margin: "auto",
-    marginTop: 20,
+    marginTop: 100,
+    opacity: "0.5",
   },
-  serialHead: {
+  loading: {
+    fontSize: "larger",
     fontWeight: "bold",
-    borderWidth: 1,
-    padding: 10,
-  },
-  titleHead: {
-    fontWeight: "bold",
-    borderWidth: 1,
-    padding: 10,
-    width: wp(100) < 425 ? 80 : 500,
-    textAlign: "center",
-  },
-  statusHead: {
-    fontWeight: "bold",
-    borderWidth: 1,
-    padding: 10,
-    width: 95,
-    textAlign: "center",
-  },
-  toggleHead: {
-    fontWeight: "bold",
-    borderWidth: 1,
-    padding: 10,
-    width: 70,
-    textAlign: "center",
-  },
-  deleteHead: {
-    fontWeight: "bold",
-    borderWidth: 1,
-    padding: 10,
-    width: 65,
-    textAlign: "center",
+    margin: "auto",
+    marginTop: 50,
   },
 });
