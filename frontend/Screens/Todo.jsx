@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { wp } from "../Utilis/Scale";
 import { BASE_URL } from "@env";
+import { TodoRow } from "../Components/TodoRow";
 
 export const Todo = () => {
   const { token, user } = useSelector((store) => store);
@@ -48,6 +49,30 @@ export const Todo = () => {
       });
   };
 
+  const toggleTodo = (id) => {
+    axios
+      .patch(
+        `${BASE_URL}/todo/${id}`,
+        {},
+        {
+          headers: {
+            Authorization: "Bearer " + token,
+          },
+        }
+      )
+      .then((res) => getTodos());
+  };
+
+  const deleteTodo = (id) => {
+    axios
+      .delete(`${BASE_URL}/todo/${id}`, {
+        headers: {
+          Authorization: "Bearer " + token,
+        },
+      })
+      .then((res) => getTodos());
+  };
+
   useEffect(() => {
     if (!token) return Navigate("/login");
     getTodos();
@@ -74,15 +99,15 @@ export const Todo = () => {
       </View>
 
       {todos.map((el, i) => (
-        <View key={el._id} style={styles.tableBody}>
-          <Text style={styles.serial}>{i + 1}</Text>
-          <Text style={styles.title}>{el.title}</Text>
-          <Text style={styles.status}>
-            {el.status ? "Completed" : "Not Completed"}
-          </Text>
-          <Text style={styles.toggle}>Toggle Status</Text>
-          <Text style={styles.delete}>Delete Task</Text>
-        </View>
+        <TodoRow
+          key={el._id}
+          serial={i + 1}
+          title={el.title}
+          status={el.status}
+          id={el._id}
+          toggleTodo={toggleTodo}
+          deleteTodo={deleteTodo}
+        />
       ))}
     </View>
   );
@@ -112,80 +137,36 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   serialHead: {
-    fontSize: "larger",
     fontWeight: "bold",
     borderWidth: 1,
     padding: 10,
   },
   titleHead: {
-    fontSize: "larger",
     fontWeight: "bold",
     borderWidth: 1,
     padding: 10,
-    width: wp(100) < 425 ? 100 : 800,
+    width: wp(100) < 425 ? 80 : 500,
     textAlign: "center",
   },
   statusHead: {
-    fontSize: "larger",
     fontWeight: "bold",
     borderWidth: 1,
     padding: 10,
-    width: 150,
+    width: 95,
     textAlign: "center",
   },
   toggleHead: {
-    fontSize: "larger",
     fontWeight: "bold",
-    borderWidth: 1,
-    padding: 10,
-    width: 140,
-    textAlign: "center",
-  },
-  deleteHead: {
-    fontSize: "larger",
-    fontWeight: "bold",
-    borderWidth: 1,
-    padding: 10,
-    width: 120,
-    textAlign: "center",
-  },
-  tableBody: {
-    flexDirection: "row",
-    margin: "auto",
-  },
-  serial: {
-    fontSize: "large",
     borderWidth: 1,
     padding: 10,
     width: 70,
     textAlign: "center",
   },
-  title: {
-    fontSize: "large",
-    borderWidth: 1,
-    padding: 10,
-    width: wp(100) < 425 ? 100 : 800,
-  },
-  status: {
-    fontSize: "large",
-    borderWidth: 1,
-    padding: 10,
-    width: 150,
-  },
-  toggle: {
-    fontSize: "large",
+  deleteHead: {
     fontWeight: "bold",
     borderWidth: 1,
     padding: 10,
-    width: 140,
-    cursor: "pointer",
-  },
-  delete: {
-    fontSize: "large",
-    fontWeight: "bold",
-    borderWidth: 1,
-    padding: 10,
-    width: 120,
-    cursor: "pointer",
+    width: 65,
+    textAlign: "center",
   },
 });

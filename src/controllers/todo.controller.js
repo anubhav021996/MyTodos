@@ -68,14 +68,4 @@ router.get("", authentication, async (req, res) => {
   }
 });
 
-// router.get("/:id",async(req,res)=>{
-//     try{
-//         const product= await Product.findById(req.params.id).populate("user_id",{businessName:1}).lean().exec();
-//         res.status(200).send(product);
-//     }
-//     catch(e){
-//         res.status(500).send(e.message);
-//     }
-// });
-
 module.exports = router;
