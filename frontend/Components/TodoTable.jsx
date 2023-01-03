@@ -38,6 +38,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     borderWidth: 1,
     padding: 10,
+    width: 58,
   },
   titleHead: {
     fontWeight: "bold",
@@ -50,14 +51,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     borderWidth: 1,
     padding: 10,
-    width: 95,
+    width: 91,
     textAlign: "center",
   },
   toggleHead: {
     fontWeight: "bold",
     borderWidth: 1,
     padding: 10,
-    width: 70,
+    width: 67,
     textAlign: "center",
   },
   deleteHead: {

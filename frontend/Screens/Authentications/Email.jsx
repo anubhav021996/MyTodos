@@ -1,12 +1,11 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
-import { useNavigate } from "react-router-dom";
 import { wp } from "../../Utilis/Scale";
 import { BASE_URL } from "@env";
 import { useSelector } from "react-redux";
 
-export const Email = () => {
+export const Email = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [otpRec, setOtpRec] = useState(false);
@@ -14,7 +13,6 @@ export const Email = () => {
   const [resend, setResend] = useState(false);
   const [otpSend, setOtpSend] = useState(false);
   const [time, setTime] = useState(60);
-  const Navigate = useNavigate();
   const { token } = useSelector((store) => store);
 
   const requestOtp = () => {
@@ -28,7 +26,6 @@ export const Email = () => {
       })
       .then((res) => {
         setOtpRec(true);
-        console.log(res.data);
 
         let id = setInterval(() => {
           setTime((t) => {
@@ -58,7 +55,10 @@ export const Email = () => {
         otp: otp,
       })
       .then((res) =>
-        Navigate("/signup", { state: { token: res.data, email: email } })
+        navigation.navigate("signup", {
+          token: `${res.data}`,
+          email: `${email}`,
+        })
       )
       .catch((e) => {
         if (e.response.data.errors)
@@ -71,7 +71,7 @@ export const Email = () => {
   };
 
   useEffect(() => {
-    if (token) return Navigate("/");
+    if (token) return navigation.navigate("todo");
   }, [token]);
 
   return (
@@ -96,7 +96,7 @@ export const Email = () => {
             style={styles.otp}
             placeholder="Enter OTP"
             keyboardType="numeric"
-            maxLength="4"
+            maxLength={4}
             onChangeText={(text) => setOtp(text)}
             disabled={otpSend}
           />
@@ -117,42 +117,43 @@ export const Email = () => {
 const styles = StyleSheet.create({
   container: {
     margin: "auto",
-    textAlign: "center",
     marginTop: 50,
-    gap: 20,
     boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
     padding: 50,
   },
   heading: {
-    fontSize: "xx-large",
+    fontSize: 30,
     fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 20,
   },
   input: {
-    width: wp(100) < 425 ? 200 : 400,
+    width: wp(100) < 425 ? 260 : 400,
     borderWidth: 1,
+    borderRadius: 5,
     padding: 10,
-    margin: "auto",
+    marginBottom: 15,
   },
   otpBox: {
     marginTop: 20,
-    width: wp(100) < 425 ? 150 : 200,
+    width: wp(100) < 425 ? 260 : 200,
     margin: "auto",
-    gap: 10,
   },
   otp: {
-    width: wp(100) < 425 ? 150 : 200,
+    width: wp(100) < 425 ? 260 : 200,
     borderWidth: 1,
+    borderRadius: 5,
     padding: 10,
     margin: "auto",
+    marginBottom: 20,
   },
   resendTime: {
-    marginTop: -10,
-    fontSize: "smaller",
+    textAlign: "center",
+    marginBottom: 2,
   },
   resend: {
-    marginTop: -10,
-    fontSize: "smaller",
+    marginBottom: 2,
+    textAlign: "center",
     color: "#2196f3",
     cursor: "pointer",
   },

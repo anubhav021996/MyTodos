@@ -2,18 +2,16 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 import { wp } from "../Utilis/Scale";
 import { BASE_URL } from "@env";
 import { TodoTable } from "../Components/TodoTable";
 
-export const Todo = () => {
+export const Todo = ({ navigation }) => {
   const { token, user } = useSelector((store) => store);
   const [todos, setTodos] = useState([]);
   const [isUpload, setIsUpload] = useState(false);
   const [loading, setLoading] = useState(false);
   const [title, setTitle] = useState("");
-  const Navigate = useNavigate();
 
   const handleAdd = () => {
     setIsUpload(true);
@@ -77,7 +75,7 @@ export const Todo = () => {
   };
 
   useEffect(() => {
-    if (!token) return Navigate("/login");
+    if (!token) return navigation.navigate("login");
     getTodos();
   }, [token]);
 
@@ -116,33 +114,32 @@ export const Todo = () => {
 
 const styles = StyleSheet.create({
   heading: {
-    fontSize: "larger",
     fontWeight: "bold",
     marginBottom: 20,
-    margin: "auto",
+    textAlign: "center",
     marginTop: 20,
   },
   add: {
     flexDirection: "row",
-    gap: 10,
-    margin: "auto",
+    alignSelf: "center",
   },
   input: {
     width: wp(100) < 425 ? 200 : 400,
     borderWidth: 1,
-    padding: 10,
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    marginRight: 10,
   },
   notask: {
-    fontSize: "xx-large",
+    fontSize: 30,
     fontWeight: "bold",
-    margin: "auto",
     marginTop: 100,
-    opacity: "0.5",
+    textAlign: "center",
   },
   loading: {
-    fontSize: "larger",
+    fontSize: 20,
     fontWeight: "bold",
-    margin: "auto",
+    textAlign: "center",
     marginTop: 50,
   },
 });

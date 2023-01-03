@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
-import { useLocation, useNavigate } from "react-router-dom";
 import { wp } from "../../Utilis/Scale";
 import { BASE_URL } from "@env";
 import axios from "axios";
@@ -8,12 +7,10 @@ import { useDispatch, useSelector } from "react-redux";
 import { addToken } from "../../Redux/Auth/actionAuth";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const ResetPassword = () => {
-  const { state } = useLocation();
+export const ResetPassword = ({ route, navigation }) => {
   const [password, setPassword] = useState("");
   const [isUpload, setIsUpload] = useState(false);
   const Dispatch = useDispatch();
-  const Navigate = useNavigate();
   const { token } = useSelector((store) => store);
 
   const handleSubmit = () => {
@@ -24,14 +21,14 @@ export const ResetPassword = () => {
         { password },
         {
           headers: {
-            Authorization: "Bearer " + state.token,
+            Authorization: "Bearer " + route.params.token,
           },
         }
       )
       .then(async (res) => {
         Dispatch(addToken(res.data.token));
         await AsyncStorage.setItem("token", res.data.token);
-        Navigate("/");
+        navigation.navigate("todo");
       })
       .catch((e) => {
         if (e.response.data.errors)
@@ -44,13 +41,13 @@ export const ResetPassword = () => {
   };
 
   useEffect(() => {
-    if (token) return Navigate("/");
+    if (token) return navigation.navigate("todo");
   }, [token]);
 
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Reset Password</Text>
-      <TextInput style={styles.input} value={state.email} disabled />
+      <TextInput style={styles.input} value={route.params.email} disabled />
       <TextInput
         style={styles.input}
         secureTextEntry
@@ -65,21 +62,21 @@ export const ResetPassword = () => {
 const styles = StyleSheet.create({
   container: {
     margin: "auto",
-    textAlign: "center",
     marginTop: 50,
-    gap: 20,
     boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
     padding: 50,
   },
   heading: {
-    fontSize: "xx-large",
+    fontSize: 30,
     fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 20,
   },
   input: {
-    width: wp(100) < 425 ? 200 : 400,
+    width: wp(100) < 425 ? 260 : 400,
     borderWidth: 1,
+    borderRadius: 5,
     padding: 10,
-    margin: "auto",
+    marginBottom: 15,
   },
 });

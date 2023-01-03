@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Alert, Button, StyleSheet, Text, TextInput, View } from "react-native";
-import { useNavigate } from "react-router-dom";
 import { wp } from "../../Utilis/Scale";
 import { BASE_URL } from "@env";
 import axios from "axios";
@@ -13,10 +12,9 @@ const initialData = {
   password: "",
 };
 
-export const Login = () => {
+export const Login = ({ navigation }) => {
   const [data, setData] = useState(initialData);
   const [isupload, setIsUpload] = useState(false);
-  const Navigate = useNavigate();
   const Dispatch = useDispatch();
   const { token } = useSelector((store) => store);
 
@@ -29,7 +27,7 @@ export const Login = () => {
       .then(async (res) => {
         Dispatch(addToken(res.data.token));
         await AsyncStorage.setItem("token", res.data.token);
-        Navigate("/");
+        navigation.navigate("todo");
       })
       .catch((e) => {
         if (e.response.data.errors)
@@ -42,7 +40,7 @@ export const Login = () => {
   };
 
   useEffect(() => {
-    if (token) return Navigate("/");
+    if (token) return navigation.navigate("todo");
   }, [token]);
 
   return (
@@ -60,11 +58,11 @@ export const Login = () => {
         placeholder="Enter your password"
         onChangeText={(text) => handleChange(text, "password")}
       />
-      <Text style={styles.forgot} onPress={() => Navigate("/forgot")}>
+      <Text style={styles.forgot} onPress={() => navigation.navigate("forgot")}>
         Forgot Password?
       </Text>
       <Button title="Submit" disabled={isupload} onPress={handleSubmit} />
-      <Text style={styles.new} onPress={() => Navigate("/email")}>
+      <Text style={styles.new} onPress={() => navigation.navigate("email")}>
         Create a new account
       </Text>
     </View>
@@ -74,32 +72,34 @@ export const Login = () => {
 const styles = StyleSheet.create({
   container: {
     margin: "auto",
-    textAlign: "center",
     marginTop: 50,
-    gap: 20,
     boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
     padding: 50,
   },
   heading: {
-    fontSize: "xx-large",
+    fontSize: 30,
     fontWeight: "bold",
+    textAlign: "center",
     marginBottom: 20,
   },
   input: {
-    width: wp(100) < 425 ? 200 : 400,
+    width: wp(100) < 425 ? 260 : 400,
     borderWidth: 1,
+    borderRadius: 5,
     padding: 10,
-    margin: "auto",
+    marginBottom: 15,
   },
   new: {
     color: "#2196f3",
     cursor: "pointer",
-    marginTop: -15,
+    textAlign: "center",
+    marginTop: 5,
   },
   forgot: {
     color: "#2196f3",
     cursor: "pointer",
     textAlign: "right",
-    marginTop: -15,
+    marginTop: -10,
+    marginBottom: 15,
   },
 });

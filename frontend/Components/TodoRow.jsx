@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
   serial: {
     borderWidth: 1,
     padding: 10,
-    width: 57,
+    width: 58,
     textAlign: "center",
   },
   title: {
@@ -45,14 +45,14 @@ const styles = StyleSheet.create({
   status: {
     borderWidth: 1,
     padding: 10,
-    width: 95,
+    width: 91,
     textAlign: "center",
   },
   toggle: {
     fontWeight: "bold",
     borderWidth: 1,
     padding: 10,
-    width: 70,
+    width: 67,
     cursor: "pointer",
     textAlign: "center",
   },
