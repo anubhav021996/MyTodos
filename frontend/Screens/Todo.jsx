@@ -81,6 +81,8 @@ export const Todo = () => {
     getTodos();
   }, [token]);
 
+  if (!user) return <Text style={styles.loading}>Loading...</Text>;
+
   return (
     <View>
       <Text style={styles.heading}>{`Welcome ${user?.name}!`}</Text>
